@@ -52,7 +52,7 @@ namespace Grupparbete_DeluxeParking
             ParkingHouse newParkingHouse = new ParkingHouse();
             newParkingHouse.HouseName = Console.ReadLine();
             ShowCitiesForMaking();
-            Console.WriteLine("Input CityId");
+            Console.Write("Input CityId: ");
             newParkingHouse.CityId = int.Parse(Console.ReadLine());
             Database.InsertParkingHouse(newParkingHouse);
             Console.WriteLine(newParkingHouse.HouseName + " was successfully created");
