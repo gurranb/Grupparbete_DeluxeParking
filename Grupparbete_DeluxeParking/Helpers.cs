@@ -71,6 +71,7 @@ namespace Grupparbete_DeluxeParking
         }
         public static void ListParkingSlots()
         {
+            Console.Clear();
             List<ParkingSlot> parkingSlots = Database.ListAvailableParkingSlots();
             Console.WriteLine();
             Console.WriteLine("City name\tHouse name\tSlotId\t\t\t\tParking Slots");
@@ -79,6 +80,8 @@ namespace Grupparbete_DeluxeParking
             {
                 Console.WriteLine($"{parkingSlot.CityName,-10}\t{parkingSlot.HouseName,-10}\t{parkingSlot.AllSlots,-30}\t{parkingSlot.OccupiedSlots}");
             }
+            Console.WriteLine();
+            ListAllSlots();
             Console.ReadLine();
         }
         public static void ShowParkingSlots()
