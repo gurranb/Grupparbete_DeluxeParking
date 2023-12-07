@@ -10,7 +10,7 @@
                 Console.WriteLine("Deluxe Parking");
                 Console.WriteLine("[1] List Cities\n[2] Add a City\n[3] List Parkinghouses\n" +
                     "[4] Add a ParkingHouse\n[5] Add new ParkingSlot\n[6] Create a car\n[7] List of cars" +
-                    "\n[8] Park a car\n[9] Display all carSlots");
+                    "\n[8] Park a car\n[9] Display all carSlots\n[C] Check out a car\n[S] Display total ElectricSpots in City/ParkingHouse");
                 var key = Console.ReadKey();
 
                 switch (key.KeyChar)
@@ -41,6 +41,12 @@
                         break;
                     case '9':
                         Helpers.ListParkingSlots();
+                        break;
+                    case 'c':
+                        Helpers.CheckOutCar();
+                        break;
+                    case 's':
+                        Helpers.ListElectricOutlet();
                         break;
 
                 }

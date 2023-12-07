@@ -18,7 +18,6 @@ namespace Grupparbete_DeluxeParking
             }
             Console.ReadLine();
         }
-
         public static void ShowCitiesForMaking()
         {
             Console.WriteLine("Id\tCity Name");
@@ -30,7 +29,6 @@ namespace Grupparbete_DeluxeParking
                 Console.WriteLine(city.Id + "\t" + city.Cityname);
             }
         }
-
         public static void InsertCity()
         {
             Console.WriteLine();
@@ -44,7 +42,6 @@ namespace Grupparbete_DeluxeParking
             Console.WriteLine("Successfully added city " + newCity.Cityname + " to the list");
             Console.ReadLine();
         }
-
         public static void InsertParkingHouse()
         {
             Console.WriteLine();
@@ -58,7 +55,6 @@ namespace Grupparbete_DeluxeParking
             Console.WriteLine(newParkingHouse.HouseName + " was successfully created");
             Console.ReadLine();
         }
-
         public static void ListParkingHouses()
         {
             Console.WriteLine();
@@ -77,7 +73,7 @@ namespace Grupparbete_DeluxeParking
         {
             List<ParkingSlot> parkingSlots = Database.ListAvailableParkingSlots();
             Console.WriteLine();
-            Console.WriteLine("City name\tHouse name\tSlotId\t\t\t\tOccupied Slots");
+            Console.WriteLine("City name\tHouse name\tSlotId\t\t\t\tParking Slots");
             Console.WriteLine("----------------------------------------------------------------------------------------------------------");
             foreach (var parkingSlot in parkingSlots)
             {
@@ -108,14 +104,26 @@ namespace Grupparbete_DeluxeParking
                 Console.WriteLine($"{parkingHouse.Id,-5}\t{parkingHouse.HouseName,-15}\t{parkingHouse.TotalParkingSlots}");
             }
         }
-
+        public static void ListAllSlots()
+        {
+            List<ParkingSlot> allSlots = Database.ShowAllParkingSlots();
+            Console.WriteLine();
+            Console.WriteLine("House name\tParking Slots\t(E)=Electric  (N)=Normal");
+            Console.WriteLine("-----------------------------------------------------------");
+            foreach (var slot in allSlots)
+            {
+                Console.WriteLine($"{slot.HouseName,-15}\t{slot.ParkingSlots}");
+            }
+        }
         public static void InsertParkingSpot()
         {
-            Console.WriteLine();
+            Console.Clear();
+            Console.WriteLine("Create a new parkingSlot");
+            Console.WriteLine("-------------------------------");
             ShowParkingHousesForMaking();
             Console.Write("Input Parkinghouse ID: ");
             int parkingHouseId = int.Parse(Console.ReadLine());
-
+            ListAllSlots();
             Console.Write("Input SlotNumber: ");
             string slotNumber = Console.ReadLine();
 
@@ -133,12 +141,10 @@ namespace Grupparbete_DeluxeParking
                 SlotNumber = slotNumber,
                 ElectricOutlet = electricOutlet
             };
-
-            int rowsAffected = Database.InsertParkingSlot(newParkingSlot);
+            Database.InsertParkingSlot(newParkingSlot);
             Console.WriteLine("A new parkingSlot in ParkingHouseId " + newParkingSlot.ParkingHouseId + " was successfully created");
             Console.ReadLine();
         }
-
         public static void MakeNewCar()
         {
             Console.WriteLine();
@@ -171,6 +177,17 @@ namespace Grupparbete_DeluxeParking
             }
             Console.ReadLine();
         }
+        public static void ShowParkedCars()
+        {
+            Console.WriteLine();
+            Console.WriteLine("CarId\tPlate\t\tMake\t\tColor\t\tParkingSlotId");
+            Console.WriteLine("------------------------------------------------------------------------");
+            List<Car> parkedCars = Database.GetAllCars();
+            foreach (Car car in parkedCars)
+            {
+                Console.WriteLine($"{car.Id,-3}\t{car.Plate,-10}\t{car.Make,-8}\t{car.Color,-8}\t{car.ParkingSlotsId}");
+            }
+        }
         public static void ShowCars()
         {
             Console.WriteLine();
@@ -184,17 +201,74 @@ namespace Grupparbete_DeluxeParking
         }
         public static void ParkACar()
         {
+            int carId = 0;
+            int spotId = 0;
+            while (true)
+            {
+                Console.Clear();
+                ShowCars();
+                Console.Write("Input carID: ");
+
+                if (!int.TryParse(Console.ReadLine(), out carId) || !Database.CarExists(carId))
+                {
+                    Console.WriteLine("Invalid carID. Please enter a valid carID.");
+                    Console.ReadKey();
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            while (true)
+            {
+                Console.Clear();
+                ShowParkingSlots();
+                Console.Write("Input SlotId for carID " + carId + " : ");
+
+                if (!int.TryParse(Console.ReadLine(), out spotId) || !Database.SlotExists(spotId))
+                {
+                    Console.WriteLine("Invalid SlotId. Please enter a valid SlotId.");
+                    Console.ReadKey();
+                }
+                else
+                {
+                    Database.ParkCar(carId, spotId);
+                    Console.WriteLine("Successfully parked car with ID " + carId + " to slotNumber " + spotId);
+                    Console.ReadLine();
+                    break;
+                }
+            }
+        }
+        public static void CheckOutCar()
+        {
             Console.WriteLine();
-            ShowCars();
-            Console.Write("Input carID: ");
+            ShowParkedCars();
+            Console.Write("Input carID you want to check out: ");
             int carId = int.Parse(Console.ReadLine());
-            ShowParkingSlots();
-            Console.Write("Input SlotId: ");
-            int spotId = int.Parse(Console.ReadLine());
-            Database.ParkCar(carId, spotId);
-            Console.WriteLine("Successfully parked car with ID " + carId + " to slotNumber " +  spotId);
+            Database.ParkCar(carId, null);
+            Console.WriteLine("Successfully checked out carId " + carId);
             Console.ReadLine();
         }
-
+        public static void ListElectricOutlet()
+        {
+            List<ParkingSlot> electricOutlets = Database.ShowElectricOutletsCities();
+            Console.WriteLine();
+            Console.WriteLine("City name\tTotal Electric outlet");
+            Console.WriteLine("-------------------------------------");
+            foreach (var electricOutlet in electricOutlets)
+            {
+                Console.WriteLine($"{electricOutlet.CityName,-10}\t{electricOutlet.TotalElectricSpots,-10}");
+            }
+            List<ParkingSlot> electricOutlets2 = Database.ShowElectricOutletsParkingHouses();
+            Console.WriteLine();
+            Console.WriteLine("House name\tTotal Electric outlet");
+            Console.WriteLine("--------------------------------------");
+            foreach (var electricOutlet in electricOutlets2)
+            {
+                Console.WriteLine($"{electricOutlet.HouseName,-10}\t{electricOutlet.TotalElectricSpots,-10}");
+            }
+            Console.ReadLine();
+        }
     }
 }
